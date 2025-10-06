@@ -1,0 +1,37 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@font-face {
+  font-family: "ExoFont";
+  src: url("/Exo2-VariableFont_wght.ttf");
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+:root {
+  scroll-behavior: smooth;
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+h1 {
+  font-family: "ExoFont", sans-serif;
+}
+
+#home::before {
+  content: "";
+  background-image: url("/background.png");
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.4;
+}

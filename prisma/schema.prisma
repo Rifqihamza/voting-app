@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  STUDENT
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  nis      String  @unique
+  name     String
+  password String
+  kelas    String?
+  role     Role    @default(STUDENT)
+  isActive Boolean @default(true)
+
+  votes        Vote[]
+  sessions     Session[]
+  loginHistory LoginHistory[]
+  actions      ActionLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Election {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  startAt     DateTime
+  endAt       DateTime
+  isPublished Boolean  @default(false)
+  isActive    Boolean  @default(false)
+
+  candidates Candidate[]
+  votes      Vote[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Candidate {
+  id         Int      @id @default(autoincrement())
+  election   Election @relation(fields: [electionId], references: [id])
+  electionId Int
+
+  nameKetua String
+  nameWakil String
+  visi      String? @db.Text
+  misi      String? @db.Text
+  foto      String?
+
+  votes Vote[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Vote {
+  id          Int       @id @default(autoincrement())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int
+  candidate   Candidate @relation(fields: [candidateId], references: [id])
+  candidateId Int
+  election    Election  @relation(fields: [electionId], references: [id])
+  electionId  Int
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, electionId])
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  token     String   @unique
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+}
+
+model LoginHistory {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  ipAddress String?
+  userAgent String?
+  success   Boolean  @default(true)
+  reason    String? // alasan gagal (password salah, user tidak ada)
+  createdAt DateTime @default(now())
+}
+
+model ActionLog {
+  id         Int      @id @default(autoincrement())
+  actor      User?    @relation(fields: [actorId], references: [id])
+  actorId    Int?
+  actionType String // CREATE_USER, UPDATE_ELECTION, DELETE_CANDIDATE
+  resource   String? // contoh: \"User:123\" atau \"Election:2\"
+  before     Json?
+  after      Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+}

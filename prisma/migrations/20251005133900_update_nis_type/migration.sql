@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `user` MODIFY `nis` VARCHAR(191) NOT NULL;
