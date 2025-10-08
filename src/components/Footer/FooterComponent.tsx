@@ -16,7 +16,8 @@ export default function FooterComponent() {
                         <h2 className="font-semibold">Komisi Pemilihan Raya Sekolah</h2>
                         <p className="w-1/2 font-normal">Platform pemilihan Ketua & Wakil Ketua OSIS SMK Mitra Industri MM2100</p>
                     </div>
-                    <div className="flex flex-col md:flex-row gap-5 md:gap-10">
+
+                    <div className="flex flex-col md:flex-row gap-5 md:gap-10 w-full">
                         {/* Quick Menu */}
                         {!session && (
                             <div>
@@ -39,7 +40,7 @@ export default function FooterComponent() {
                         )}
 
                         {/* Social Media */}
-                        <div>
+                        <div className="w-full">
                             <h1 className="text-2xl font-bold tracking-widest text-violet-500">Social Media</h1>
                             <div className="flex flex-col gap-2 mt-3">
                                 <Link href="https://www.instagram.com/mitra_industri/" target="_blank" className="hover:text-violet-400 duration-300 flex flex-row items-center gap-2">
@@ -62,7 +63,7 @@ export default function FooterComponent() {
                             </div>
                         </div>
                         {/* Contact */}
-                        <div>
+                        <div className="w-full">
                             <h1 className="text-2xl font-bold tracking-widest text-violet-500">Contact</h1>
                             <div className="flex flex-col gap-2 mt-3">
                                 <Link href="mailto:smkmitraindustrimm2100@smkind-mm2100.sch.id" className="hover:text-violet-400 duration-300 flex flex-row items-center gap-2">

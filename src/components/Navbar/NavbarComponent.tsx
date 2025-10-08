@@ -10,7 +10,7 @@ export default function NavbarComponent() {
 
     return (
         <header className={`${!session ? "fixed" : "sticky"} top-0 left-0 w-full bg-white shadow z-50`}>
-            <nav className="flex flex-row items-center justify-between px-6 py-3 z-50">
+            <nav className="flex flex-row items-center justify-between px-2 md:px-6 py-3 z-50">
                 <div className="flex flex-row items-center gap-2">
                     <Image src="/itlogo.png" alt="Logo IT" width={40} height={40} />
                     <Link href="/" className="tracking-wider hover:text-violet-500 duration-300 flex flex-col">
@@ -34,7 +34,7 @@ export default function NavbarComponent() {
                             <li>
                                 <Link
                                     href="/login"
-                                    className="flex flex-row items-center gap-1 hover:bg-violet-500 hover:text-white bg-violet-50 border text-violet-600 duration-300 px-3 py-2 rounded-xl"
+                                    className="text-sm md:text-base flex flex-row items-center gap-1 hover:bg-violet-500 hover:text-white bg-violet-50 border text-violet-600 duration-300 px-3 py-2 rounded-xl"
                                 >
                                     <IoLogInOutline size={24} />
                                     Log In
