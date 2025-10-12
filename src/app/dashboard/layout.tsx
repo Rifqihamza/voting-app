@@ -11,7 +11,7 @@ export default function DashboardLayout({
     return (
         <main className="flex">
             {/* Sidebar */}
-            <aside className="w-64 h-screen px-4 py-4 bg-white fixed top-0 left-0">
+            <aside className="w-64 h-screen px-4 py-4 bg-white fixed top-0 left-0 z-50">
                 <ul className="space-y-5">
                     <li className="flex flex-row items-center gap-2 mb-10">
                         <Image src="/itlogo.png" alt="Logo IT" width={40} height={40} />
@@ -56,7 +56,7 @@ export default function DashboardLayout({
             {/* Content Area */}
             <section className="flex-1 ml-60 min-h-screen bg-gray-100">
                 {/* Top Navbar */}
-                <nav className="flex items-end justify-end px-6 py-4 bg-white sticky top-0 left-0">
+                <nav className="flex items-end justify-end px-6 py-4 bg-white sticky top-0 left-0 z-50">
                     <LogoutButton />
                 </nav>
 

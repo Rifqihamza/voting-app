@@ -8,7 +8,7 @@ export interface Election {
     description: string
     startDate: string
     endDate: string
-    isActive: boolean
+    isPublished: boolean
     createdAt: string
     updatedAt: string
 }

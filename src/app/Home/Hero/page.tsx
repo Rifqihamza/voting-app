@@ -21,8 +21,8 @@ export default function HeroPage() {
                         <Link href="/register" className="bg-violet-500 text-white shadow shadow-gray-400 hover:shadow-gray-600 duration-300 text-center px-6 py-2 rounded-xl">Register First</Link>
                     </div>
                 </div>
-                <div className="w-1/2 h-1/2 md:w-full md:h-full flex items-center justify-center md:items-end md:justify-end">
-                    <Image src="/hero.png" alt="Vote Picture" className="" width={400} height={400} />
+                <div className="w-1/2 h-1/2 md:w-full md:h-full flex items-center justify-center md:items-end md:justify-end translate-x-16">
+                    <Image src="/hero.png" alt="Vote Picture" className="object-cover" width={500} height={500} />
                 </div>
             </div>
         </section>

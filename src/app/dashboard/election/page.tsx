@@ -107,6 +107,7 @@ export default function ElectionDashboard() {
                 className="card shadow-md p-6 rounded-2xl space-y-4 bg-white"
             >
                 <h2 className="text-xl font-semibold">Add New Election</h2>
+                <label htmlFor="title">Election Title</label>
                 <input
                     type="text"
                     placeholder="Election title"
@@ -114,6 +115,7 @@ export default function ElectionDashboard() {
                     onChange={(e) => setTitle(e.target.value)}
                     className="input border border-gray-200 w-full bg-white outline-none"
                 />
+                <label htmlFor="description">Election Description</label>
                 <input
                     type="text"
                     placeholder="Election Description"
@@ -121,6 +123,7 @@ export default function ElectionDashboard() {
                     onChange={(e) => setDescription(e.target.value)} // Fix: Update description state
                     className="input border border-gray-200 w-full bg-white outline-none"
                 />
+                <label htmlFor="startAt">Start Time</label>
                 <input
                     type="datetime-local"
                     placeholder="Start Time" // Fix: Change placeholder
@@ -128,6 +131,7 @@ export default function ElectionDashboard() {
                     onChange={(e) => setStartAt(e.target.value)} // Fix: Update startAt state
                     className="input border border-gray-200 w-full bg-white outline-none"
                 />
+                <label htmlFor="endAt">End Time</label>
                 <input
                     type="datetime-local"
                     placeholder="End Time" // Fix: Change placeholder
@@ -155,10 +159,10 @@ export default function ElectionDashboard() {
                                 <h3 className="text-lg font-semibold">{election.title}</h3>
                                 <p>
                                     <span className="font-medium">Status:</span>{" "}
-                                    {election.isActive ? (
-                                        <span className="text-green-500">Active</span>
+                                    {election.isPublished ? (
+                                        <span className="text-green-500">Published</span>
                                     ) : (
-                                        <span className="text-gray-500">Inactive</span>
+                                        <span className="text-gray-500">Unpublished</span>
                                     )}
                                 </p>
                                 <p className="text-sm">
@@ -171,7 +175,7 @@ export default function ElectionDashboard() {
                                 <div className="flex gap-2 mt-4">
                                     <button
                                         className="btn btn-success btn-sm"
-                                        disabled={election.isActive}
+                                        disabled={election.isPublished}
                                         onClick={() => handleAction("start", election.id)}
                                     >
                                         Start

@@ -8,105 +8,100 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  ADMIN
-  STUDENT
-}
-
 model User {
-  id       Int     @id @default(autoincrement())
-  nis      String  @unique
-  name     String
-  password String
-  kelas    String?
-  role     Role    @default(STUDENT)
-  isActive Boolean @default(true)
-
-  votes        Vote[]
-  sessions     Session[]
-  loginHistory LoginHistory[]
+  id           Int            @id @default(autoincrement())
+  nis          String         @unique
+  name         String
+  password     String
+  kelas        String?
+  role         String         @default("STUDENT")
+  isActive     Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
   actions      ActionLog[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  loginHistory LoginHistory[]
+  sessions     Session[]
+  votes        Vote[]
 }
 
 model Election {
-  id          Int      @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   title       String
   description String?
   startAt     DateTime
   endAt       DateTime
-  isPublished Boolean  @default(false)
-  isActive    Boolean  @default(false)
-
-  candidates Candidate[]
-  votes      Vote[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  isPublished Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  candidates  Candidate[]
+  votes       Vote[]
 }
 
 model Candidate {
   id         Int      @id @default(autoincrement())
-  election   Election @relation(fields: [electionId], references: [id])
   electionId Int
+  nameKetua  String
+  nameWakil  String
+  visi       String?  @db.Text
+  misi       String?  @db.Text
+  foto       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  election   Election @relation(fields: [electionId], references: [id])
+  votes      Vote[]
 
-  nameKetua String
-  nameWakil String
-  visi      String? @db.Text
-  misi      String? @db.Text
-  foto      String?
-
-  votes Vote[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@index([electionId], map: "Candidate_electionId_fkey")
 }
 
 model Vote {
   id          Int       @id @default(autoincrement())
-  user        User      @relation(fields: [userId], references: [id])
   userId      Int
-  candidate   Candidate @relation(fields: [candidateId], references: [id])
   candidateId Int
-  election    Election  @relation(fields: [electionId], references: [id])
   electionId  Int
-
-  createdAt DateTime @default(now())
+  createdAt   DateTime  @default(now())
+  candidate   Candidate @relation(fields: [candidateId], references: [id])
+  election    Election  @relation(fields: [electionId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
 
   @@unique([userId, electionId])
+  @@index([candidateId], map: "Vote_candidateId_fkey")
+  @@index([electionId], map: "Vote_electionId_fkey")
 }
 
 model Session {
   id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [id])
   userId    Int
   token     String   @unique
   expiresAt DateTime
-
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "Session_userId_fkey")
 }
 
 model LoginHistory {
   id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [id])
   userId    Int
   ipAddress String?
   userAgent String?
   success   Boolean  @default(true)
-  reason    String? // alasan gagal (password salah, user tidak ada)
+  reason    String?
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "LoginHistory_userId_fkey")
 }
 
 model ActionLog {
   id         Int      @id @default(autoincrement())
-  actor      User?    @relation(fields: [actorId], references: [id])
   actorId    Int?
-  actionType String // CREATE_USER, UPDATE_ELECTION, DELETE_CANDIDATE
-  resource   String? // contoh: \"User:123\" atau \"Election:2\"
-  before     Json?
-  after      Json?
+  actionType String
+  resource   String?
+  before     String?  @db.LongText
+  after      String?  @db.LongText
   ipAddress  String?
   createdAt  DateTime @default(now())
+  actor      User?    @relation(fields: [actorId], references: [id])
+
+  @@index([actorId], map: "ActionLog_actorId_fkey")
 }
