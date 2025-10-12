@@ -1,6 +1,7 @@
 "use client"
 
 import { signOut } from "next-auth/react"
+import { BiLogOut } from "react-icons/bi"
 
 export default function LogoutButton() {
     const handleLogout = async () => {
@@ -10,8 +11,9 @@ export default function LogoutButton() {
     return (
         <button
             onClick={handleLogout}
-            className="text-sm px-3 py-1 rounded-2xl border-2 border-violet-400 text-violet-600 hover:border-violet-300 hover:text-violet-400 transition-colors cursor-pointer font-semibold tracking-widest uppercase"
+            className="text-md uppercase tracking-widest flex items-center font-semibold text-red-500 hover:text-red-200 duration-300 cursor-pointer"
         >
+            <BiLogOut className="inline text-xl mr-2" />
             Logout
         </button>
     )

@@ -1,46 +1,67 @@
-// src/app/api/vote/route.ts
-import { NextRequest, NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
-import { auth } from "@/auth"
+// app/api/vote/route.ts
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { limitKey, rateLimitCheck } from "@/middleware/rateLimit";
 
-export async function POST(req: NextRequest) {
-    const session = await auth()
+export async function POST(req: Request) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    if (!session || !session.user) {
-        return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 })
+    // rate limit per user+ip
+    const ip = (req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown").split(",")[0].trim();
+    try {
+        await rateLimitCheck(`${ip}:${session.user.id}`);
+    } catch (e) {
+        return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+
+    let body;
+    try {
+        body = await req.json();
+    } catch {
+        return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    }
+
+    const electionId = Number(body.electionId);
+    const candidateId = Number(body.candidateId);
+    if (!Number.isInteger(electionId) || !Number.isInteger(candidateId)) {
+        return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
     }
 
     try {
-        const body = await req.json()
-        const { candidateId, electionId } = body
+        const result = await prisma.$transaction(async (tx) => {
+            const election = await tx.election.findUnique({ where: { id: electionId } });
+            if (!election || !election.isActive) throw new Error("Election is not active");
 
-        if (!candidateId || !electionId) {
-            return NextResponse.json({ success: false, message: "Missing fields" }, { status: 400 })
+            const vote = await tx.vote.create({
+                data: {
+                    userId: Number(session.user.id),
+                    electionId,
+                    candidateId
+                }
+            });
+
+            await tx.voteAudit.create({
+                data: {
+                    voteId: vote.id,
+                    userId: Number(session.user.id),
+                    electionId,
+                    candidateId,
+                    ip,
+                    userAgent: req.headers.get("user-agent") || undefined
+                }
+            });
+
+            return vote;
+        });
+
+        return NextResponse.json({ ok: true, vote: result });
+    } catch (err: any) {
+        if (err?.code === "P2002") {
+            return NextResponse.json({ error: "You have already voted in this election" }, { status: 409 });
         }
-
-        const userId = Number(session.user.id)
-
-        // cek kalau sudah vote
-        const existing = await prisma.vote.findFirst({
-            where: { userId, electionId: Number(electionId) },
-        })
-
-        if (existing) {
-            return NextResponse.json({ success: false, message: "Kamu sudah melakukan vote untuk election ini." }, { status: 400 })
-        }
-
-        await prisma.vote.create({
-            data: {
-                userId,
-                candidateId: Number(candidateId),
-                electionId: Number(electionId),
-            },
-        })
-
-        return NextResponse.json({ success: true, message: "Vote berhasil!" })
-    } catch (err: unknown) {
-        console.error(err)
-        const message = err instanceof Error ? err.message : "Terjadi kesalahan server"
-        return NextResponse.json({ success: false, message }, { status: 500 })
+        return NextResponse.json({ error: err?.message || "Server error" }, { status: 500 });
     }
 }

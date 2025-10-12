@@ -53,19 +53,30 @@ model Candidate {
   @@index([electionId], map: "Candidate_electionId_fkey")
 }
 
+// (masukkan di file prisma/schema.prisma, merge ke model yang ada)
 model Vote {
   id          Int       @id @default(autoincrement())
   userId      Int
-  candidateId Int
-  electionId  Int
-  createdAt   DateTime  @default(now())
-  candidate   Candidate @relation(fields: [candidateId], references: [id])
-  election    Election  @relation(fields: [electionId], references: [id])
   user        User      @relation(fields: [userId], references: [id])
+  electionId  Int
+  election    Election  @relation(fields: [electionId], references: [id])
+  candidateId Int
+  candidate   Candidate @relation(fields: [candidateId], references: [id])
+  createdAt   DateTime  @default(now())
 
-  @@unique([userId, electionId])
-  @@index([candidateId], map: "Vote_candidateId_fkey")
-  @@index([electionId], map: "Vote_electionId_fkey")
+  @@unique([userId, electionId], map: "unique_vote_per_user_per_election")
+  @@index([candidateId], map: "idx_vote_candidate")
+}
+
+model VoteAudit {
+  id          Int      @id @default(autoincrement())
+  voteId      Int?
+  userId      Int
+  electionId  Int
+  candidateId Int
+  ip          String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
 }
 
 model Session {
