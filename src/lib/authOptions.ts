@@ -1,18 +1,20 @@
 import { type NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+
 import { prisma } from "./prisma"
 import { verifyPassword } from "./password"
 
-export const authOptions: NextAuthOptions = {
+const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
             name: "Credentials",
             credentials: {
                 nis: { label: "NIS", type: "text" },
+                name: { label: "Nama", type: "text" },
                 password: { label: "Password", type: "password" },
             },
             async authorize(credentials) {
-                if (!credentials?.nis || !credentials?.password) {
+                if (!credentials?.nis || !credentials?.name || !credentials?.password) {
                     throw new Error("NIS dan password wajib diisi.")
                 }
 
@@ -61,5 +63,8 @@ export const authOptions: NextAuthOptions = {
             }
             return session
         },
-    }
+    },
+    secret: process.env.NEXTAUTH_SECRET,
 }
+
+export default authOptions;

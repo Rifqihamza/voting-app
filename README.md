@@ -50,6 +50,124 @@ Website ini dibangun menggunakan **Next.js**, **Tailwind CSS**, dan **DaisyUI**,
 
 📤 Data dapat diexport ke file Excel (.xlsx) dengan 1 klik.
 
+# Full Structure Code
+
+voting-app/
+├── .next
+├── node_modules
+├── prisma/
+│ ├── migration
+│ └── schema.prisma
+├── public/
+│ ├── Font
+│ ├── Image
+│ └── uploads
+├── src/
+│ ├── app/
+│ │ ├── api/
+│ │ │ ├── auth/
+│ │ │ │ ├── \_log
+│ │ │ │ ├── [...nextauth]/
+│ │ │ │ │ └── route.ts
+│ │ │ │ └── session/
+│ │ │ │ └── route.ts
+│ │ │ ├── dashboard/
+│ │ │ │ ├── analytics/
+│ │ │ │ │ └── route.ts
+│ │ │ │ ├── candidates/
+│ │ │ │ │ ├── [id]/
+│ │ │ │ │ │ └── route.ts
+│ │ │ │ │ └── route.ts
+│ │ │ │ ├── election/
+│ │ │ │ │ ├── reset/
+│ │ │ │ │ │ └── route.ts
+│ │ │ │ │ ├── start/
+│ │ │ │ │ │ └── route.ts
+│ │ │ │ │ └── route.ts
+│ │ │ │ ├── overview/
+│ │ │ │ │ └── route.ts
+│ │ │ │ ├── participants/
+│ │ │ │ │ └── route.ts
+│ │ │ │ └── upload
+│ │ │ └── main/
+│ │ │ ├── login/
+│ │ │ │ └── route.ts
+│ │ │ ├── logout/
+│ │ │ │ └── route.ts
+│ │ │ ├── register/
+│ │ │ │ └── route.ts
+│ │ │ └── vote/
+│ │ │ ├── check/
+│ │ │ │ └── route.ts
+│ │ │ ├── result/
+│ │ │ │ └── route.ts
+│ │ │ └── route.ts
+│ │ ├── AuthenticationPage/
+│ │ │ ├── login/
+│ │ │ │ └── page.tsx
+│ │ │ └── register/
+│ │ │ └── page.tsx
+│ │ ├── dashboard/
+│ │ │ ├── AnalyticsPage
+│ │ │ ├── CandidatePage
+│ │ │ ├── ElectionPage
+│ │ │ ├── HomePage
+│ │ │ ├── SettingPage
+│ │ │ ├── UserPage
+│ │ │ ├── layout.tsx
+│ │ │ └── page.tsx
+│ │ ├── home/
+│ │ │ ├── AboutPage
+│ │ │ ├── HeroPage
+│ │ │ └── TutorialPage
+│ │ ├── unAuthorized/
+│ │ │ └── page.tsx
+│ │ ├── voting/
+│ │ │ ├── [id]/
+│ │ │ │ ├── CandidateDetailClient.tsx
+│ │ │ │ └── page.tsx
+│ │ │ └── page.tsx
+│ │ ├── WrapperComponent/
+│ │ │ └── Wrapper.tsx
+│ │ ├── global.css
+│ │ ├── layout.tsx
+│ │ ├── page.tsx
+│ │ └── Providers.tsx
+│ ├── components/
+│ │ ├── FooterComponent/
+│ │ │ └── FooterComponent.tsx
+│ │ ├── LogoutComponent/
+│ │ │ └── LogoutComponent.tsx
+│ │ ├── NavbarComponent/
+│ │ │ └── NavbarComponent.tsx
+│ │ └── ProtectedPage/
+│ │ └── ProtectedPage.tsx
+│ ├── hooks/
+│ │ ├── useCandidate.ts
+│ │ ├── useDashboard.ts
+│ │ ├── useSession.ts
+│ │ └── useVote.ts
+│ ├── lib/
+│ │ ├── auth.ts
+│ │ ├── authHelpers.ts
+│ │ ├── authOptions.ts
+│ │ ├── password.ts
+│ │ ├── prisma.ts
+│ │ └── ratelimit.ts
+│ ├── types/
+│ │ └── next-auth.d.ts
+│ └── middleware.ts
+├── .env
+├── .gitignore
+├── eslint.config.mjs
+├── next-end.d.ts
+├── next.config.ts
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── README.md
+└── tsconfig.json
+
 # 🧑‍💻 Kontributor
 
 ## Rifqi Hamza — Developer Utama

@@ -1,14 +1,8 @@
 import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
-import { authOptions } from "../../../../lib/authOptions"
+import authOptions from "@/lib/authOptions"
 import "next-auth"
 import "next-auth/jwt"
-
-/**
- * GET /api/auth/session
- * Ambil session pengguna yang sedang login
- */
-
 
 export async function GET() {
     try {
