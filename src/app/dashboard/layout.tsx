@@ -1,4 +1,4 @@
-import LogoutButton from "@/components/LogoutButton/LogoutButton";
+import LogoutButton from "@/components/LogoutComponent/LogoutButton";
 import Link from "next/link";
 import { BiArchive, BiChart, BiHome, BiUser } from "react-icons/bi";
 import Image from "next/image";
@@ -21,31 +21,31 @@ export default function DashboardLayout({
                         </Link>
                     </li>
                     <li className="hover:text-violet-600 hover:bg-gray-100 px-3 py-2 rounded-lg duration-300">
-                        <Link href="/dashboard/home" className="text-xl font-semibold tracking-wider flex items-center gap-1">
+                        <Link href="/dashboard/HomePage" className="text-xl font-semibold tracking-wider flex items-center gap-1">
                             <BiHome />
                             Home
                         </Link>
                     </li>
                     <li className="hover:text-violet-600 hover:bg-gray-100 px-3 py-2 rounded-lg duration-300">
-                        <Link href="/dashboard/participants" className="text-xl font-semibold tracking-wider flex items-center gap-1">
+                        <Link href="/dashboard/UserPage" className="text-xl font-semibold tracking-wider flex items-center gap-1">
                             <GrGroup />
                             Participants
                         </Link>
                     </li>
                     <li className="hover:text-violet-600 hover:bg-gray-100 px-3 py-2 rounded-lg duration-300">
-                        <Link href="/dashboard/election" className="text-xl font-semibold tracking-wider flex items-center gap-1">
+                        <Link href="/dashboard/ElectionPage" className="text-xl font-semibold tracking-wider flex items-center gap-1">
                             <BiArchive />
                             Election
                         </Link>
                     </li>
                     <li className="hover:text-violet-600 hover:bg-gray-100 px-3 py-2 rounded-lg duration-300">
-                        <Link href="/dashboard/candidates" className="text-xl font-semibold tracking-wider flex items-center gap-1">
+                        <Link href="/dashboard/CandidatePage" className="text-xl font-semibold tracking-wider flex items-center gap-1">
                             <BiUser />
                             Candidates
                         </Link>
                     </li>
                     <li className="hover:text-violet-600 hover:bg-gray-100 px-3 py-2 rounded-lg duration-300">
-                        <Link href="/dashboard/analytics" className="text-xl font-semibold tracking-wider flex items-center gap-1">
+                        <Link href="/dashboard/AnalyticsPage" className="text-xl font-semibold tracking-wider flex items-center gap-1">
                             <BiChart />
                             Analytics
                         </Link>

@@ -1,12 +1,12 @@
 import type { Metadata } from "next"
 import Providers from "./Providers"
 import "./globals.css"
-import { NavbarWrapper, FooterWrapper } from "./ComponentWrapper/ComponentWrapper"
+import { NavbarWrapper, FooterWrapper } from "./WrapperComponent/Wrapper"
 
 export const metadata: Metadata = {
   title: "Voting App",
   description: "Website voting ketua OSIS",
-  icons: "/itlogo.png",
+  icons: "/Image/itlogo.png",
 }
 
 export default function RootLayout({

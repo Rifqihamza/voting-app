@@ -3,7 +3,7 @@
 
 @font-face {
   font-family: "ExoFont";
-  src: url("/Exo2-VariableFont_wght.ttf");
+  src: url("/Font/Exo2-VariableFont_wght.ttf");
 }
 
 ::-webkit-scrollbar {
@@ -27,7 +27,7 @@ h1 {
 
 #home::before {
   content: "";
-  background-image: url("/background.png");
+  background-image: url("/Image/background.png");
   position: absolute;
   top: 0;
   left: 0;

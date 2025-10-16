@@ -14,23 +14,25 @@ export interface Election {
 }
 
 export function useElection() {
-    const [election, setElection] = useState<Election | null>(null)
+    const [elections, setElections] = useState<Election[]>([]) // ⚠️ array
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+
     useEffect(() => {
-        const fetchElection = async () => {
+        const fetchElections = async () => {
             try {
-                const res = await fetch("/api/election")
-                if (!res.ok) throw new Error("Failed to fetch election")
+                const res = await fetch("/api/dashboard/election")
+                if (!res.ok) throw new Error("Failed to fetch elections")
                 const data = await res.json()
-                setElection(data)
+                setElections(data) // expect data to be an array
             } catch (err) {
                 setError((err as Error).message)
             } finally {
                 setLoading(false)
             }
         }
-        fetchElection()
+        fetchElections()
     }, [])
-    return { election, loading, error }
+
+    return { elections, loading, error }
 }

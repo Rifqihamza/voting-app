@@ -11,7 +11,7 @@ export function useVote() {
         setError(null)
         setSuccess(null)
         try {
-            const res = await fetch("/api/vote", {
+            const res = await fetch("/api/main/vote", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ candidateId, electionId }),

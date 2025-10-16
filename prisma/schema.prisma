@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -53,19 +53,19 @@ model Candidate {
   @@index([electionId], map: "Candidate_electionId_fkey")
 }
 
-// (masukkan di file prisma/schema.prisma, merge ke model yang ada)
 model Vote {
   id          Int       @id @default(autoincrement())
   userId      Int
-  user        User      @relation(fields: [userId], references: [id])
-  electionId  Int
-  election    Election  @relation(fields: [electionId], references: [id])
   candidateId Int
-  candidate   Candidate @relation(fields: [candidateId], references: [id])
+  electionId  Int
   createdAt   DateTime  @default(now())
+  candidate   Candidate @relation(fields: [candidateId], references: [id])
+  election    Election  @relation(fields: [electionId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
 
   @@unique([userId, electionId], map: "unique_vote_per_user_per_election")
   @@index([candidateId], map: "idx_vote_candidate")
+  @@index([electionId], map: "Vote_electionId_fkey")
 }
 
 model VoteAudit {

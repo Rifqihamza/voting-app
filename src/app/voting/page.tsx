@@ -22,7 +22,7 @@ export default function VotingPage() {
         if (!session) {
             // Pengguna tidak terotentikasi: redirect ke login
             // Menggunakan replace agar halaman voting yang gagal diakses tidak ada di history
-            router.replace("/login")
+            router.replace("/Authentication/login")
         } else if (session.user.role !== "STUDENT") {
             // Pengguna bukan student (misal: admin): redirect ke admin page
             router.replace("/dashboard") // Menggunakan /dashboard sesuai pola sebelumnya
