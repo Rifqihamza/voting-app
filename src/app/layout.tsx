@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
-import Providers from "./Providers"
-import "./globals.css"
-import { NavbarWrapper, FooterWrapper } from "./WrapperComponent/Wrapper"
+import "../assets/css/globals.css"
+import NavbarComponent from "@/components/NavbarComponent/NavbarComponent"
+import FooterComponent from "@/components/FooterComponent/FooterComponent"
 
 export const metadata: Metadata = {
   title: "Voting App",
@@ -17,11 +17,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Providers>
-          <NavbarWrapper />
-          {children}
-          <FooterWrapper />
-        </Providers>
+        <NavbarComponent />
+        {children}
+        <FooterComponent />
       </body>
     </html>
   )

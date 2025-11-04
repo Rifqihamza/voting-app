@@ -1,11 +1,11 @@
-generator client {
-  provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/client"
-}
-
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 model User {
@@ -13,15 +13,16 @@ model User {
   nis          String         @unique
   name         String
   password     String
-  kelas        String?
-  role         String         @default("STUDENT")
-  isActive     Boolean        @default(true)
+  role         Role           @default(STUDENT)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
-  actions      ActionLog[]
   loginHistory LoginHistory[]
-  sessions     Session[]
   votes        Vote[]
+}
+
+enum Role {
+  STUDENT
+  ADMIN
 }
 
 model Election {
@@ -45,12 +46,11 @@ model Candidate {
   visi       String?  @db.Text
   misi       String?  @db.Text
   foto       String?
+  isActive   Boolean  @default(true)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   election   Election @relation(fields: [electionId], references: [id])
   votes      Vote[]
-
-  @@index([electionId], map: "Candidate_electionId_fkey")
 }
 
 model Vote {
@@ -59,35 +59,11 @@ model Vote {
   candidateId Int
   electionId  Int
   createdAt   DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id])
   candidate   Candidate @relation(fields: [candidateId], references: [id])
   election    Election  @relation(fields: [electionId], references: [id])
-  user        User      @relation(fields: [userId], references: [id])
 
   @@unique([userId, electionId], map: "unique_vote_per_user_per_election")
-  @@index([candidateId], map: "idx_vote_candidate")
-  @@index([electionId], map: "Vote_electionId_fkey")
-}
-
-model VoteAudit {
-  id          Int      @id @default(autoincrement())
-  voteId      Int?
-  userId      Int
-  electionId  Int
-  candidateId Int
-  ip          String?
-  userAgent   String?
-  createdAt   DateTime @default(now())
-}
-
-model Session {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  token     String   @unique
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
-
-  @@index([userId], map: "Session_userId_fkey")
 }
 
 model LoginHistory {
@@ -96,23 +72,6 @@ model LoginHistory {
   ipAddress String?
   userAgent String?
   success   Boolean  @default(true)
-  reason    String?
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
-
-  @@index([userId], map: "LoginHistory_userId_fkey")
-}
-
-model ActionLog {
-  id         Int      @id @default(autoincrement())
-  actorId    Int?
-  actionType String
-  resource   String?
-  before     String?  @db.LongText
-  after      String?  @db.LongText
-  ipAddress  String?
-  createdAt  DateTime @default(now())
-  actor      User?    @relation(fields: [actorId], references: [id])
-
-  @@index([actorId], map: "ActionLog_actorId_fkey")
 }

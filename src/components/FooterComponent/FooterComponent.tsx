@@ -1,10 +1,7 @@
 import Link from "next/link"
 import { BsInstagram, BsFacebook, BsYoutube } from "react-icons/bs"
 import { BiEnvelope, BiMap, BiPhoneCall } from "react-icons/bi"
-import { useSession } from "next-auth/react"
 export default function FooterComponent() {
-    const { data: session } = useSession()
-
     const date = new Date().getFullYear()
     return (
         <footer className="w-full max-w-7xl h-full mx-auto px-4 py-10 border-t border-gray-200 relative">
@@ -19,26 +16,23 @@ export default function FooterComponent() {
 
                     <div className="flex flex-col md:flex-row gap-5 md:gap-10 w-full">
                         {/* Quick Menu */}
-                        {!session && (
-                            <div>
-                                <h1 className="text-2xl font-bold tracking-widest text-violet-500">Menu</h1>
-                                <ul className="">
-                                    <li className="text-xl font-medium">
-                                        <Link href="#home" className="relative group">
-                                            Home
-                                            <span className="absolute bottom-0 left-0 w-0 group-hover:w-full h-0.5 bg-violet-500 duration-300"></span>
-                                        </Link>
-                                    </li>
-                                    <li className="text-xl font-medium">
-                                        <Link href="#about" className="relative group">
-                                            About
-                                            <span className="absolute bottom-0 left-0 w-0 group-hover:w-full h-0.5 bg-violet-500 duration-300"></span>
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </div>
-                        )}
-
+                        <div>
+                            <h1 className="text-2xl font-bold tracking-widest text-violet-500">Menu</h1>
+                            <ul className="">
+                                <li className="text-xl font-medium">
+                                    <Link href="#home" className="relative group">
+                                        Home
+                                        <span className="absolute bottom-0 left-0 w-0 group-hover:w-full h-0.5 bg-violet-500 duration-300"></span>
+                                    </Link>
+                                </li>
+                                <li className="text-xl font-medium">
+                                    <Link href="#about" className="relative group">
+                                        About
+                                        <span className="absolute bottom-0 left-0 w-0 group-hover:w-full h-0.5 bg-violet-500 duration-300"></span>
+                                    </Link>
+                                </li>
+                            </ul>
+                        </div>
                         {/* Social Media */}
                         <div className="w-full">
                             <h1 className="text-2xl font-bold tracking-widest text-violet-500">Social Media</h1>

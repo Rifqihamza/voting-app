@@ -1,70 +1,71 @@
-import { type NextAuthOptions } from "next-auth"
-import CredentialsProvider from "next-auth/providers/credentials"
+import { PrismaClient } from '@prisma/client'
+import CredentialsProvider from 'next-auth/providers/credentials'
+import bcrypt from 'bcryptjs'
+import * as z from 'zod'
+import type { JWT } from 'next-auth/jwt'
+import type { Session, User, NextAuthOptions } from 'next-auth' // ✅ perbaikan
 
-import { prisma } from "./prisma"
-import { verifyPassword } from "./password"
+const prisma = new PrismaClient()
 
-const authOptions: NextAuthOptions = {
+const credentialSchema = z.object({
+    nis: z.string().min(4, { message: 'NIS harus diisi' }),
+    password: z.string().min(4, { message: 'Password harus diisi' }),
+})
+
+export const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
-            name: "Credentials",
+            name: 'Credentials',
             credentials: {
-                nis: { label: "NIS", type: "text" },
-                name: { label: "Nama", type: "text" },
-                password: { label: "Password", type: "password" },
+                nis: { label: 'NIS', type: 'text' },
+                password: { label: 'Password', type: 'password' },
             },
             async authorize(credentials) {
-                if (!credentials?.nis || !credentials?.name || !credentials?.password) {
-                    throw new Error("NIS dan password wajib diisi.")
+                const parsed = credentialSchema.safeParse(credentials)
+                if (!parsed.success) {
+                    console.error('Validasi gagal:', parsed.error.format())
+                    return null
                 }
 
-                const user = await prisma.user.findUnique({
-                    where: { nis: credentials.nis },
-                })
+                const { nis, password } = parsed.data
 
-                if (!user) throw new Error("User tidak ditemukan.")
-                const isValid = await verifyPassword(credentials.password, user.password)
-                if (!isValid) throw new Error("Password salah.")
+                const user = await prisma.user.findUnique({ where: { nis } })
+                if (!user || !user.isActive) return null
+
+                const isValid = await bcrypt.compare(password, user.password)
+                if (!isValid) return null
 
                 return {
                     id: user.id,
-                    nis: user.nis,
                     name: user.name,
+                    nis: user.nis,
                     role: user.role,
                 }
             },
         }),
     ],
-    pages: {
-        signIn: "/login",
-        error: "/login",
-    },
-
     session: {
-        strategy: "jwt",
-        maxAge: 30 * 24 * 60 * 60, // 30 days
+        strategy: 'jwt',
     },
     callbacks: {
-        async jwt({ token, user }) {
+        async jwt({ token, user }: { token: JWT; user?: User }) {
             if (user) {
-                token.id = user.id as number
-                token.nis = user.nis
-                token.name = user.name
+                token.id = user.id
                 token.role = user.role
+                token.nis = user.nis
             }
             return token
         },
-        async session({ session, token }) {
-            if (token && session.user) {
+        async session({ session, token }: { session: Session; token: JWT }) {
+            if (token) {
                 session.user.id = token.id as number
-                session.user.nis = token.nis as string
-                session.user.name = token.name as string
                 session.user.role = token.role as string
+                session.user.nis = token.nis as string
             }
             return session
         },
     },
-    secret: process.env.NEXTAUTH_SECRET,
+    pages: {
+        signIn: '/login',
+    },
 }
-
-export default authOptions;
