@@ -12,6 +12,30 @@ const updateCandidateSchema = z.object({
     isActive: z.boolean().optional(),
 })
 
+export async function GET(
+    _req: Request,
+    { params }: { params: { id: string } }
+) {
+    try {
+        const candidate = await prisma.candidate.findUnique({
+            where: { id: Number(params.id) },
+        })
+
+        if (!candidate) {
+            return NextResponse.json({ error: "Not found" }, { status: 404 })
+        }
+
+        return NextResponse.json(candidate)
+    } catch (error) {
+        console.error("GET candidate by id error:", error)
+        return NextResponse.json(
+            { error: "Gagal mengambil data kandidat" },
+            { status: 500 }
+        )
+    }
+}
+
+
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
     try {
         const session = await auth()

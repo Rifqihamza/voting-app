@@ -1,8 +1,7 @@
-// app/VotingPage/[id]/page.tsx
-import VoteCandidateClient from "@/components/VotingCandidateClient/VoteCandidateClient"
 import { notFound } from "next/navigation"
+import VoteCandidateClient from "@/components/VotingCandidateClient/VoteCandidateClient"
 
-interface PageProps {
+type PageProps = {
     params: Promise<{ id: string }>
 }
 
@@ -10,29 +9,15 @@ export default async function VotingDetailPage({ params }: PageProps) {
     const { id } = await params
     const candidateId = Number(id)
 
-    if (isNaN(candidateId)) {
+    if (!candidateId) {
         notFound()
     }
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL
-    if (!apiUrl) {
-        throw new Error("NEXT_PUBLIC_API_URL is not defined")
-    }
-
-    let res: Response
-
-    try {
-        res = await fetch(`${apiUrl}/candidate/${candidateId}`, {
-            method: "GET",
-            headers: {
-                "Accept": "application/json",
-            },
-            cache: "no-store",
-        })
-    } catch (error) {
-        console.error("FETCH ERROR:", error)
-        throw new Error("Failed to connect to backend API")
-    }
+    // 🔹 fetch API internal (SERVER SIDE)
+    const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/candidate/${candidateId}`,
+        { cache: "no-store" }
+    )
 
     if (!res.ok) {
         notFound()

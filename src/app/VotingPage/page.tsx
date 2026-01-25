@@ -6,52 +6,76 @@ import { useCandidates } from "@/hook/useCandidate"
 import { useEffect, useMemo } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import LogoutButton from "@/components/LogoutComponent/LogoutButton"
 
 export default function VotingPage() {
     const { candidates, loading, error } = useCandidates()
     const { data: session, status } = useSession()
     const router = useRouter()
 
-    /**
-     * Memoization untuk mencegah re-render map yang tidak perlu
-     */
     const candidateList = useMemo(() => {
         return candidates.map((c) => (
             <Link
                 key={c.id}
                 href={`/VotingPage/${c.id}`}
-                title={c.nameKetua}
-                className="hover:scale-105 duration-300"
+                aria-label={`Pilih paslon ${c.nameKetua} dan ${c.nameWakil}`}
+                className="group relative rounded-2xl border border-violet-200 bg-white bg-linear-to-b from-violet-900 to-80% shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-violet-500 overflow-hidden"
             >
-                <h1 className="font-bold text-violet-500 text-center">
-                    {c.nameKetua} & {c.nameWakil}
-                </h1>
-
-                <p className="text-center font-semibold uppercase tracking-wide mb-2">
+                {/* Badge Paslon */}
+                <span className="
+                    absolute top-4 left-4 z-10
+                    rounded-full bg-violet-600 text-white
+                    px-3 py-1 text-xs font-semibold
+                ">
                     Paslon {c.id}
-                </p>
+                </span>
 
-                <Image
-                    src={c.foto || "/placeholder.png"}
-                    width={500}
-                    height={500}
-                    alt={`Foto Paslon ${c.nameKetua}`}
-                    className="w-96 h-96 object-contain"
-                    priority
-                />
+                {/* Image Section */}
+                <div className="flex justify-center items-center p-6  rounded-t-2xl">
+                    <Image
+                        src={c.foto || "/placeholder.png"}
+                        width={300}
+                        height={300}
+                        alt={`Foto Paslon ${c.nameKetua}`}
+                        className="
+                            h-56 w-auto object-contain
+                            transition-transform duration-300
+                            group-hover:scale-105
+                        "
+                        priority
+                    />
+                </div>
+
+                {/* Content */}
+                <div className="p-5 text-center space-y-2">
+                    <h2 className="text-lg font-bold text-gray-800">
+                        {c.nameKetua}
+                        <span className="block text-sm font-medium text-gray-500">
+                            & {c.nameWakil}
+                        </span>
+                    </h2>
+
+                    <div className="pt-3">
+                        <span className="
+                            inline-block rounded-full
+                            bg-violet-100 text-violet-700
+                            px-4 py-1 text-sm font-semibold
+                            group-hover:bg-violet-600
+                            group-hover:text-white
+                            transition-colors
+                        ">
+                            Lihat Detail & Vote →
+                        </span>
+                    </div>
+                </div>
             </Link>
         ))
     }, [candidates])
 
-    /**
-     * Redirect logic
-     * - Dijaga agar tidak berjalan saat status masih loading
-     * - Menghindari redirect loop
-     */
     useEffect(() => {
         if (status !== "authenticated") {
             if (status === "unauthenticated") {
-                router.replace("/Authentication/login")
+                router.replace("/AuthPage/login")
             }
             return
         }
@@ -61,13 +85,10 @@ export default function VotingPage() {
         }
     }, [status, session?.user.role, router])
 
-    /**
-     * Guard rendering:
-     * - Mencegah flash konten sebelum redirect
-     */
     if (status !== "authenticated" || session.user.role !== "STUDENT") {
         return (
-            <div className="flex justify-center items-center min-h-dvh">
+            <div className="flex flex-col justify-center items-center min-h-dvh">
+                <span className="loading loading-spinner loading-xl text-black"></span>
                 <p className="text-lg font-medium text-gray-600">
                     Checking access and session status...
                 </p>
@@ -76,21 +97,41 @@ export default function VotingPage() {
     }
 
     if (loading) {
-        return <p className="text-center mt-10">Loading daftar kandidat...</p>
+        return (
+            <div className=" w-full h-dvh flex flex-col items-center justify-center">
+                <span className="loading loading-spinner loading-xl text-black"></span>
+            </div>
+        )
     }
 
     if (error) {
         return (
-            <p className="text-center mt-10 text-red-600">
-                Error loading candidates
-            </p>
+            <div className=" w-full h-dvh flex flex-col items-center justify-center">
+                <p className="text-center mt-10 text-red-600">
+                    Error loading candidates
+                </p>
+            </div>
         )
     }
 
     return (
-        <main className="w-full max-w-6xl flex flex-col items-center justify-center mx-auto p-6">
-            <div className="flex flex-col md:flex-row justify-around items-center gap-10 w-full">
-                {candidateList}
+        <main className="relative w-full min-h-dvh">
+            <span id="voting"></span>
+            <div className="relative w-full max-w-7xl min-h-dvh mx-auto py-10 px-6 space-y-10">
+                <div className="md:absolute bottom-0 right-0">
+                    <LogoutButton />
+                </div>
+                <header className="text-center">
+                    <h1 className="text-3xl font-extrabold text-violet-700">
+                        Pemilihan Ketua OSIS
+                    </h1>
+                    <p className="text-gray-600 mt-2">
+                        Pilih pasangan calon terbaik menurutmu
+                    </p>
+                </header>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 ">
+                    {candidateList}
+                </div>
             </div>
         </main>
     )

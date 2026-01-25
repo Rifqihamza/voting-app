@@ -19,7 +19,7 @@ export default function LogoutButton() {
     return (
         <button
             onClick={handleLogout}
-            className="text-md uppercase tracking-widest flex items-center font-semibold text-red-500 hover:text-red-200 duration-300 cursor-pointer"
+            className="bg-error/30 px-2 py-1 rounded-lg text-md uppercase tracking-widest flex items-center font-semibold text-red-500 hover:text-red-300 transition-colors cursor-pointer"
         >
             <BiLogOut className="inline text-xl mr-2" />
             Logout

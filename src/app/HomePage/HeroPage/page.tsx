@@ -3,7 +3,7 @@ import Image from "next/image"
 
 export default function HeroPage() {
     return (
-        <section id="home" className="flex flex-col items-center justify-center mx-auto w-full max-w-6xl min-h-[90dvh] md:min-h-[100dvh]">
+        <section id="home" className="flex flex-col items-center justify-center mx-auto w-full max-w-6xl min-h-[90dvh] md:min-h-dvh">
             <div className="flex flex-col-reverse md:flex-row justify-between items-center gap-8 relative w-full h-full">
                 <div className="space-y-3 text-center md:text-start">
                     <h1 className="text-lg md:text-3xl font-bold uppercase tracking-wide md:block hidden">

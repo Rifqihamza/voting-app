@@ -1,4 +1,3 @@
-// app/voting/[id]/VoteCandidateClient.tsx
 "use client"
 
 import Image from "next/image"
@@ -32,23 +31,17 @@ export default function VoteCandidateClient({ candidate }: VoteCandidateClientPr
     const [modalType, setModalType] = useState<ModalType>(null)
     const [modalMessage, setModalMessage] = useState("")
 
-    /**
-     * Execute vote action
-     */
     const executeVote = useCallback(async () => {
         setShowConfirm(false)
         await vote(candidate.id, candidate.electionId)
     }, [vote, candidate.id, candidate.electionId])
 
-    /**
-     * Handle vote result
-     */
     useEffect(() => {
         if (!success && !error) return
 
         if (success) {
             setModalType("success")
-            setModalMessage("✅ Voting berhasil! Anda akan logout dalam 3 detik...")
+            setModalMessage("Voting berhasil. Terima kasih telah menggunakan hak pilih Anda.")
             setShowResult(true)
 
             const timer = setTimeout(() => {
@@ -62,137 +55,158 @@ export default function VoteCandidateClient({ candidate }: VoteCandidateClientPr
 
         if (error) {
             setModalType("error")
-            setModalMessage(`❌ Voting gagal! ${error}`)
+            setModalMessage(`Voting gagal. ${error}`)
             setShowResult(true)
         }
     }, [success, error, router])
 
     return (
-        <section className="w-full max-w-7xl h-full mx-auto flex items-center justify-center p-5">
-            <div className="p-4 rounded-2xl shadow-md shadow-gray-400 relative">
-                <div className="flex flex-col md:flex-row justify-center gap-6">
-                    <div className="relative w-64 h-64 md:w-96 md:h-96 mx-auto bg-linear-to-br from-violet-100 to-purple-100 rounded-lg">
-                        <Image
-                            src={candidate.foto || "/placeholder.png"}
-                            alt={`Foto ${candidate.nameKetua}`}
-                            fill
-                            className="object-contain p-4"
-                            sizes="(max-width: 768px) 100vw, 50vw"
-                            priority
-                        />
+        <section className="relative min-h-dvh w-full flex items-center justify-center px-4 py-10">
+            <span id="voting"></span>
+            <div className="w-full max-w-6xl bg-white rounded-3xl shadow-xl overflow-hidden z-50">
+                <div className="flex flex-col md:flex-row gap-4 justify-between">
+                    {/* LEFT – IMAGE */}
+                    <div className="relative bg-linear-to-r from-violet-400 to-100% flex items-center justify-center px-10 py-6 md:px-20 md:py-10">
+                        <div className="relative w-full h-full aspect-square flex items-center justify-center">
+                            <Image
+                                src={candidate.foto || "/placeholder.png"}
+                                alt={`Foto ${candidate.nameKetua}`}
+                                width={250}
+                                height={250}
+                                className="object-contain"
+                                priority
+                            />
+                        </div>
                     </div>
 
-                    <div className="container p-4">
-                        <h1 className="text-3xl font-bold text-violet-500">
+                    {/* RIGHT – CONTENT */}
+                    <div className="p-8 md:p-10">
+                        <span className="inline-block mb-3 rounded-full bg-violet-100 text-violet-700 px-4 py-1 text-sm font-semibold">
+                            Paslon {candidate.id}
+                        </span>
+
+                        <h1 className="text-3xl font-extrabold text-gray-800 leading-tight">
                             {candidate.nameKetua} & {candidate.nameWakil}
                         </h1>
-                        <p className="text-violet-400 font-medium mt-1">
-                            Candidate {candidate.id}
-                        </p>
 
-                        <div className="space-y-4 mt-6">
+                        <div className="mt-8 space-y-6">
                             <div>
-                                <h2 className="text-xl font-semibold text-violet-500">
-                                    Vision:
+                                <h2 className="text-lg font-semibold text-violet-600 mb-1">
+                                    Visi
                                 </h2>
-                                <p className="text-gray-700 mt-2">
-                                    {candidate.visi || "No vision statement provided."}
+                                <p className="text-gray-700 leading-relaxed">
+                                    {candidate.visi || "Tidak ada visi yang dituliskan."}
                                 </p>
                             </div>
 
                             <div>
-                                <h2 className="text-xl font-semibold text-violet-500">
-                                    Mission:
+                                <h2 className="text-lg font-semibold text-violet-600 mb-1">
+                                    Misi
                                 </h2>
-                                <p className="text-gray-700 mt-2 whitespace-pre-line">
-                                    {candidate.misi || "No mission statement provided."}
+                                <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                                    {candidate.misi || "Tidak ada misi yang dituliskan."}
                                 </p>
                             </div>
                         </div>
 
-                        <div className="flex flex-row items-center justify-center md:justify-start mt-8 gap-4">
+                        {/* ACTIONS */}
+                        <div className="mt-10 flex flex-wrap gap-4">
                             <button
                                 onClick={() => setShowConfirm(true)}
                                 disabled={loading}
-                                className="cursor-pointer inline-block px-8 py-3 rounded-xl bg-violet-600 text-white border border-violet-500 hover:bg-violet-700 duration-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="
+                                    px-8 py-3 rounded-xl
+                                    bg-violet-600 text-white font-semibold
+                                    hover:bg-violet-700
+                                    transition-all
+                                    disabled:opacity-50 disabled:cursor-not-allowed
+                                "
                             >
-                                {loading ? "Processing..." : "Vote for this candidate"}
+                                {loading ? "Processing..." : "Confirm & Vote"}
                             </button>
 
                             <Link
-                                href="/voting"
-                                className="inline-block px-8 py-3 rounded-xl bg-white text-violet-500 border border-violet-500 hover:bg-violet-700 hover:text-white duration-300 transition-colors"
+                                href="/VotingPage"
+                                className="
+                                    px-8 py-3 rounded-xl
+                                    border border-violet-500
+                                    text-violet-600 font-semibold
+                                    hover:bg-violet-600 hover:text-white
+                                    transition-all
+                                "
                             >
-                                Back to Candidates
+                                Back
                             </Link>
                         </div>
                     </div>
                 </div>
-
-                {/* 🔐 Confirmation Modal */}
-                {showConfirm && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white rounded-xl shadow-lg p-6 w-96 text-center">
-                            <h2 className="text-xl font-semibold text-violet-600 mb-4">
-                                Confirm Your Vote
-                            </h2>
-                            <p className="text-gray-700 mb-6">
-                                Are you sure you want to vote for{" "}
-                                <strong>
-                                    {candidate.nameKetua} & {candidate.nameWakil}
-                                </strong>
-                                ?
-                                <br />
-                                This action cannot be undone.
-                            </p>
-                            <div className="flex gap-4 justify-center">
-                                <button
-                                    onClick={executeVote}
-                                    disabled={loading}
-                                    className="px-6 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors disabled:opacity-50"
-                                >
-                                    {loading ? "Processing..." : "Confirm Vote"}
-                                </button>
-                                <button
-                                    onClick={() => setShowConfirm(false)}
-                                    className="px-6 py-2 rounded-lg bg-gray-300 text-gray-700 hover:bg-gray-400 transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* 📣 Result Modal */}
-                {showResult && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                        <div className="bg-white rounded-xl shadow-lg p-6 w-80 text-center">
-                            <h2
-                                className={`text-xl font-semibold ${modalType === "success"
-                                    ? "text-green-600"
-                                    : "text-red-600"
-                                    }`}
-                            >
-                                {modalType === "success"
-                                    ? "Vote Success!"
-                                    : "Vote Failed!"}
-                            </h2>
-
-                            <p className="mt-3 text-gray-700">{modalMessage}</p>
-
-                            {modalType === "error" && (
-                                <button
-                                    onClick={() => setShowResult(false)}
-                                    className="mt-5 px-5 py-2 rounded-lg bg-violet-600 text-white hover:bg-violet-700 transition-colors"
-                                >
-                                    Close
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                )}
             </div>
+
+            {/* 🔐 CONFIRM MODAL */}
+            {showConfirm && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 text-center">
+                        <h2 className="text-xl font-bold text-gray-800">
+                            Konfirmasi Voting
+                        </h2>
+                        <p className="mt-4 text-gray-600">
+                            Anda akan memilih:
+                            <br />
+                            <strong className="text-gray-800">
+                                {candidate.nameKetua} & {candidate.nameWakil}
+                            </strong>
+                        </p>
+                        <p className="mt-2 text-sm text-red-500">
+                            Pilihan tidak dapat diubah.
+                        </p>
+
+                        <div className="mt-6 flex justify-center gap-4">
+                            <button
+                                onClick={executeVote}
+                                disabled={loading}
+                                className="px-6 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition disabled:opacity-50"
+                            >
+                                Ya, Vote
+                            </button>
+                            <button
+                                onClick={() => setShowConfirm(false)}
+                                className="px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition"
+                            >
+                                Batal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* 📣 RESULT MODAL */}
+            {showResult && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center">
+                        <h2
+                            className={`text-xl font-bold ${modalType === "success"
+                                ? "text-green-600"
+                                : "text-red-600"
+                                }`}
+                        >
+                            {modalType === "success"
+                                ? "Voting Berhasil"
+                                : "Voting Gagal"}
+                        </h2>
+
+                        <p className="mt-4 text-gray-700">{modalMessage}</p>
+
+                        {modalType === "error" && (
+                            <button
+                                onClick={() => setShowResult(false)}
+                                className="mt-6 px-6 py-2 rounded-lg bg-violet-600 text-white hover:bg-violet-700 transition"
+                            >
+                                Tutup
+                            </button>
+                        )}
+                    </div>
+                </div>
+            )}
         </section>
     )
 }
