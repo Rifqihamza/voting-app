@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Candidate } from "../../../hooks/useCandidate"
-import { useElection } from "../../../hooks/useDashboard"
+import { Candidate } from "@/hook/useCandidate"
+import { useElection } from "@/hook/useElection"
 import Image from "next/image"
 interface Props {
     onAdd: (candidate: Omit<Candidate, "id">) => Promise<void>
@@ -49,7 +49,7 @@ export default function CandidateForm({ onAdd }: Props) {
             const formDataUpload = new FormData()
             formDataUpload.append("file", file)
 
-            const res = await fetch("/api/dashboard/upload", {
+            const res = await fetch("/api/upload", {
                 method: "POST",
                 body: formDataUpload,
             })
@@ -122,7 +122,7 @@ export default function CandidateForm({ onAdd }: Props) {
                             <input
                                 type="text"
                                 placeholder="Masukkan nama ketua"
-                                className="input input-bordered w-full bg-white"
+                                className="input border border-gray-300 rounded-lg w-full bg-white"
                                 value={formData.nameKetua}
                                 onChange={(e) => setFormData({ ...formData, nameKetua: e.target.value })}
                                 required
@@ -133,7 +133,7 @@ export default function CandidateForm({ onAdd }: Props) {
                             <input
                                 type="text"
                                 placeholder="Masukkan nama wakil"
-                                className="input input-bordered w-full bg-white"
+                                className="input border border-gray-300 rounded-lg w-full bg-white"
                                 value={formData.nameWakil}
                                 onChange={(e) => setFormData({ ...formData, nameWakil: e.target.value })}
                                 required
@@ -143,10 +143,10 @@ export default function CandidateForm({ onAdd }: Props) {
 
                     {/* Dropdown election */}
                     <div>
-                        <label className="label font-semibold text-gray-700">Pilih Election</label>
+                        <label className="label font-semibold  text-gray-700">Pilih Election</label>
                         {error && <p className="text-sm text-red-500 mb-2">Gagal memuat data election: {error}</p>}
                         <select
-                            className="select select-bordered w-full bg-white"
+                            className="select border border-gray-300 px-4 rounded-lg w-full bg-white"
                             value={formData.electionId}
                             onChange={(e) => setFormData({ ...formData, electionId: e.target.value })}
                             required
@@ -167,7 +167,7 @@ export default function CandidateForm({ onAdd }: Props) {
                         <input
                             type="file"
                             accept="image/*"
-                            className="file-input file-input-bordered w-full bg-white"
+                            className="file-input file-input-primary file-input-bordered rounded-lg w-full bg-white"
                             onChange={handleImageChange}
                             disabled={uploading}
                         />
@@ -183,7 +183,7 @@ export default function CandidateForm({ onAdd }: Props) {
                         <label className="label font-semibold text-gray-700">Visi</label>
                         <textarea
                             placeholder="Tuliskan visi..."
-                            className="textarea textarea-bordered w-full bg-white h-24 resize-none"
+                            className="textarea border border-gray-300 rounded-lg w-full bg-white h-24 resize-none"
                             value={formData.visi}
                             onChange={(e) => setFormData({ ...formData, visi: e.target.value })}
                         />
@@ -193,7 +193,7 @@ export default function CandidateForm({ onAdd }: Props) {
                         <label className="label font-semibold text-gray-700">Misi</label>
                         <textarea
                             placeholder="Tuliskan misi..."
-                            className="textarea textarea-bordered w-full bg-white h-32 resize-none"
+                            className="textarea border border-gray-300 rounded-lg w-full bg-white h-32 resize-none"
                             value={formData.misi}
                             onChange={(e) => setFormData({ ...formData, misi: e.target.value })}
                         />
@@ -238,7 +238,7 @@ export default function CandidateForm({ onAdd }: Props) {
             <div className="mt-8 pt-6 border-t border-gray-200">
                 <button
                     type="submit"
-                    className="btn btn-primary w-full sm:w-auto px-8 bg-gradient-to-r from-blue-600 to-purple-600 border-none hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                    className="btn btn-primary w-full sm:w-auto px-8 text-white shadow-lg hover:shadow-xl transition-all duration-200"
                     disabled={uploading || loading}
                 >
                     {uploading ? (

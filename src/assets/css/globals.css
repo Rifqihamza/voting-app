@@ -1,6 +1,7 @@
 @import "tailwindcss";
-@plugin "daisyui";
-
+@plugin "daisyui" {
+  themes: light --default, dark --prefersdark;
+}
 @font-face {
   font-family: "ExoFont";
   src: url("/Font/Exo2-VariableFont_wght.ttf");

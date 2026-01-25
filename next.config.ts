@@ -21,7 +21,7 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "no-referrer-when-downgrade" },
           { key: "Permissions-Policy", value: "geolocation=()" },
           { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains; preload" }
-        ]
+        ],
       }
     ];
   }

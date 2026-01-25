@@ -1,15 +1,16 @@
+import { DefaultSession } from "next-auth"
 declare module 'next-auth' {
     interface Session {
         user: {
             id: number
-            name: string
+            name?: string
             nis: string
             role: string
-        }
+        } & DefaultSession['STUDENT']
     }
 
     interface User {
-        id: number
+        id: string
         name: string
         nis: string
         role: string
@@ -18,7 +19,7 @@ declare module 'next-auth' {
 
 declare module 'next-auth/jwt' {
     interface JWT {
-        id: number
+        id: string | number
         nis: string
         role: string
     }

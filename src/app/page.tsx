@@ -1,15 +1,9 @@
 "use client"
-import HeroPage from "./HomePage/HeroPage/page"
-import AboutPage from "./HomePage/AboutPage/page"
-import TutorialPage from "./HomePage/TutorialPage/page"
+import LayoutLand from "./HomePage/layout"
 export default function Apps() {
   return (
     <>
-      <main>
-        <HeroPage />
-        <AboutPage />
-        <TutorialPage />
-      </main>
+      <LayoutLand />
     </>
   )
 }

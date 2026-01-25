@@ -17,8 +17,8 @@ export default function HeroPage() {
                         tetapi juga mudah diakses oleh seluruh siswa. Berikan suaramu untuk masa depan sekolah yang lebih baik.
                     </p>
                     <div className="flex flex-row items-end md:justify-start justify-center gap-3 w-full mt-4 mb-2">
-                        <Link href="/AuthenticationPage/login" className="bg-violet-500 text-white shadow shadow-gray-400 hover:shadow-gray-600 duration-300 text-center px-6 py-2 rounded-xl">Vote Now</Link>
-                        <Link href="/AuthenticationPage/register" className="bg-violet-500 text-white shadow shadow-gray-400 hover:shadow-gray-600 duration-300 text-center px-6 py-2 rounded-xl">Register First</Link>
+                        <Link href="/AuthPage/login" className="bg-violet-500 text-white shadow shadow-gray-400 hover:shadow-gray-600 duration-300 text-center px-6 py-2 rounded-xl">Vote Now</Link>
+                        <Link href="/AuthPage/register" className="bg-violet-500 text-white shadow shadow-gray-400 hover:shadow-gray-600 duration-300 text-center px-6 py-2 rounded-xl">Register First</Link>
                     </div>
                 </div>
                 <div className="w-1/2 h-1/2 md:w-full md:h-full flex items-center justify-center md:items-end md:justify-end translate-x-16">

@@ -1,8 +1,6 @@
 import type { Metadata } from "next"
 import "../assets/css/globals.css"
-import NavbarComponent from "@/components/NavbarComponent/NavbarComponent"
-import FooterComponent from "@/components/FooterComponent/FooterComponent"
-
+import { SessionProvider } from "next-auth/react"
 export const metadata: Metadata = {
   title: "Voting App",
   description: "Website voting ketua OSIS",
@@ -17,9 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <NavbarComponent />
-        {children}
-        <FooterComponent />
+        <SessionProvider>
+          {children}
+        </SessionProvider>
       </body>
     </html>
   )

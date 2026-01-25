@@ -5,7 +5,15 @@ import { BiLogOut } from "react-icons/bi"
 
 export default function LogoutButton() {
     const handleLogout = async () => {
-        await signOut({ redirect: true, callbackUrl: "/" })
+        await fetch("/api/logout", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+        await signOut({ callbackUrl: "/" })
+        sessionStorage.clear()
+        localStorage.clear()
     }
 
     return (

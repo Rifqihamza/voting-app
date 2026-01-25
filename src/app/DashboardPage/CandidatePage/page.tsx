@@ -4,14 +4,14 @@ import { useState } from "react"
 import CandidateForm from "./CandidateForm"
 import CandidateCard from "./CandidateCard"
 import CandidateModal from "./CandidateModal"
-import { useCandidates, Candidate } from "../../../hooks/useCandidate"
+import { useCandidates, Candidate } from "@/hook/useCandidate"
 
 export default function CandidateDashboard() {
     const { candidates, loading, error, addCandidate, updateCandidate } = useCandidates()
     const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null)
     const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null)
 
-    // Helper untuk menampilkan alert sementara
+    // ✅ Helper untuk menampilkan alert sementara
     const showToast = (type: "success" | "error", message: string) => {
         setToast({ type, message })
         setTimeout(() => setToast(null), 2500)
@@ -19,8 +19,6 @@ export default function CandidateDashboard() {
 
     return (
         <section className="p-6 max-w-6xl mx-auto relative">
-            <h1 className="text-2xl font-bold mb-6 text-violet-600">Manajemen Kandidat</h1>
-
             <CandidateForm
                 onAdd={async (candidate) => {
                     try {

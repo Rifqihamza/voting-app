@@ -23,14 +23,14 @@ export default function RegisterPage() {
         try {
             await register({ nis, name, password, kelas })
             setIsPending(false)
-            setFormSuccess("Register berhasil!, Silakan login")
+            setFormSuccess("Yess Register berhasil!, Silakan login")
             // redirect setelah delay biar toast sempet muncul
             setTimeout(() => {
                 window.location.href = "/AuthPage/login"
             }, 1500)
         } catch (err: unknown) {
             console.log(err)
-            setFormError("Terjadi kesalahan saat register")
+            setFormError("Duhh, ada kesalahan saat register")
             setIsPending(false)
         }
 
@@ -114,7 +114,7 @@ export default function RegisterPage() {
 
                     <div className="flex items-center gap-1 justify-center">
                         <p className="text-sm">Sudah punya akun?</p>
-                        <Link href={"/login"} className="text-violet-500 underline">
+                        <Link href={"/AuthPage/login"} className="text-violet-500 underline">
                             Login
                         </Link>
                     </div>

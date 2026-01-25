@@ -1,190 +1,217 @@
 "use client"
 
-import { Election } from "@/generated/prisma"
-import { useState, useEffect } from "react"
+import { useState } from "react"
+import { useElection } from "@/hook/useElection"
 
 export default function ElectionDashboard() {
-    const [elections, setElections] = useState<Election[]>([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
-    const [title, setTitle] = useState("")
-    const [description, setDescription] = useState("")
-    const [startAt, setStartAt] = useState("")
-    const [endAt, setEndAt] = useState("")
-    const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false)
-    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
-    const [isErrorModalOpen, setIsErrorModalOpen] = useState(false)
-    const [electionAction, setElectionAction] = useState<"start" | "reset" | null>(null)
-    const [selectedElectionId, setSelectedElectionId] = useState<number | null>(null)
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
-    // Fetch all elections
-    const fetchElections = async () => {
-        try {
-            setLoading(true)
-            const res = await fetch("/api/dashboard/election")
-            if (!res.ok) throw new Error("Failed to fetch elections")
-            const data = await res.json()
-            setElections(data)
-        } catch (err) {
-            console.error(err)
-            setError("Failed to fetch elections")
-        } finally {
-            setLoading(false)
-        }
+    const {
+        elections,
+        loading,
+        error,
+        createElection,
+        updateElection,
+        deleteElection,
+        actionElection,
+    } = useElection()
+
+    type FormFields = {
+        title: string
+        description: string
+        startAt: string
+        endAt: string
+        isPublished: boolean
     }
 
-    useEffect(() => {
-        fetchElections()
-    }, [])
+    const [form, setForm] = useState<FormFields>({
+        title: "",
+        description: "",
+        startAt: "",
+        endAt: "",
+        isPublished: false,
+    })
 
-    // Handle Add New Election
-    const handleAddElection = async (e: React.FormEvent) => {
+    const [editId, setEditId] = useState<number | null>(null)
+    const [modal, setModal] = useState<{
+        type: "confirm" | "success" | "error" | null
+        action?: "start" | "reset" | "delete"
+        id?: number
+    }>({ type: null })
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!title.trim()) return
+        if (!form.title.trim()) return alert("Title is required")
+
         try {
-            const res = await fetch("/api/dashboard/election", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    title,
-                    description,
-                    startAt: new Date(startAt),
-                    endAt: new Date(endAt),
-                }),
-            })
-            setDescription("")
-            setStartAt("")
-            setEndAt("")
-            if (!res.ok) throw new Error("Failed to create election")
-            setTitle("")
-            fetchElections()
-        } catch (err) {
-            console.error(err)
-            alert("Error creating election")
+            if (editId) {
+                await updateElection(editId, form)
+            } else {
+                await createElection(form)
+            }
+            setForm({ title: "", description: "", startAt: "", endAt: "", isPublished: false })
+            setEditId(null)
+            setModal({ type: "success" })
+        } catch {
+            setModal({ type: "error" })
         }
     }
 
-    // Start / Reset handlers
-    const handleAction = async (action: "start" | "reset", id: number) => {
-        setElectionAction(action)
-        setSelectedElectionId(id)
-        setIsConfirmationModalOpen(true)
+    const handleEdit = (id: number) => {
+        const election = elections.find((e) => e.id === id)
+        if (!election) return
+        setForm({
+            title: election.title,
+            description: election.description || "",
+            startAt: new Date(election.startAt).toISOString().slice(0, 16),
+            endAt: new Date(election.endAt).toISOString().slice(0, 16),
+            isPublished: election.isPublished,
+        })
+        setEditId(id)
+        setIsEditModalOpen(true)
     }
+
 
     const confirmAction = async () => {
-        setIsConfirmationModalOpen(false)
-        if (!electionAction || !selectedElectionId) return
-
+        if (!modal.id || !modal.action) return
         try {
-            const response = await fetch(`/api/dashboard/election/${electionAction}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id: selectedElectionId }),
-            })
-
-            if (!response.ok) throw new Error(`Failed to ${electionAction} election`)
-            setIsSuccessModalOpen(true)
-            fetchElections()
-        } catch (error) {
-            console.error(`Error ${electionAction}ing election:`, error)
-            setIsErrorModalOpen(true)
+            if (modal.action === "delete") {
+                await deleteElection(modal.id)
+            } else {
+                await actionElection(modal.id, modal.action)
+            }
+            setModal({ type: "success" })
+        } catch {
+            setModal({ type: "error" })
         }
     }
 
-    // UI State
     if (loading) return <p className="text-center mt-10">Loading...</p>
-    if (error) return <p className="text-center text-red-500 mt-10">Error: {error}</p>
+    if (error) return <p className="text-center text-red-500">{error}</p>
 
     return (
         <section className="w-full max-w-6xl mx-auto p-6 space-y-10">
-            <h1 className="text-3xl font-bold text-violet-600">
-                Election Dashboard
-            </h1>
+            <h1 className="text-3xl font-bold text-violet-600">Election Dashboard</h1>
 
-            {/* --- Add Election Form --- */}
+            {/* Add or Edit Election */}
             <form
-                onSubmit={handleAddElection}
-                className="card shadow-md p-6 rounded-2xl space-y-4 bg-white"
+                onSubmit={handleSubmit}
+                className="card bg-white shadow-md p-6 rounded-2xl space-y-4"
             >
-                <h2 className="text-xl font-semibold">Add New Election</h2>
-                <label htmlFor="title">Election Title</label>
-                <input
-                    type="text"
-                    placeholder="Election title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="input border border-gray-200 w-full bg-white outline-none"
-                />
-                <label htmlFor="description">Election Description</label>
-                <input
-                    type="text"
-                    placeholder="Election Description"
-                    value={description} // Fix: Use description state
-                    onChange={(e) => setDescription(e.target.value)} // Fix: Update description state
-                    className="input border border-gray-200 w-full bg-white outline-none"
-                />
-                <label htmlFor="startAt">Start Time</label>
-                <input
-                    type="datetime-local"
-                    placeholder="Start Time" // Fix: Change placeholder
-                    value={startAt} // Fix: Use startAt state
-                    onChange={(e) => setStartAt(e.target.value)} // Fix: Update startAt state
-                    className="input border border-gray-200 w-full bg-white outline-none"
-                />
-                <label htmlFor="endAt">End Time</label>
-                <input
-                    type="datetime-local"
-                    placeholder="End Time" // Fix: Change placeholder
-                    value={endAt} // Fix: Use endAt state
-                    onChange={(e) => setEndAt(e.target.value)} // Fix: Update endAt state
-                    className="input border border-gray-200 w-full bg-white outline-none"
-                />
-                <button type="submit" className="btn btn-primary w-full">
-                    {loading ? <span className="loading loading-spinner loading-sm"></span> : "Add Election"}
+                <h2 className="text-xl font-semibold">
+                    Add Election
+                </h2>
+
+                <div>
+                    <label className="block">Title</label>
+                    <input
+                        type="text"
+                        value={form.title}
+                        onChange={(e) => setForm({ ...form, title: e.target.value })}
+                        className="input bg-white border border-gray-300 w-full"
+                    />
+                </div>
+
+                <div>
+                    <label className="block">Description</label>
+                    <textarea
+                        value={form.description}
+                        onChange={(e) => setForm({ ...form, description: e.target.value })}
+                        className="textarea border bg-white border-gray-300 w-full"
+                    />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block">Start At</label>
+                        <input
+                            type="datetime-local"
+                            value={form.startAt}
+                            onChange={(e) => setForm({ ...form, startAt: e.target.value })}
+                            className="input border bg-white border-gray-300 w-full"
+                        />
+                    </div>
+                    <div>
+                        <label className="block">End At</label>
+                        <input
+                            type="datetime-local"
+                            value={form.endAt}
+                            onChange={(e) => setForm({ ...form, endAt: e.target.value })}
+                            className="input border bg-white border-gray-300 w-full"
+                        />
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                    <input
+                        type="checkbox"
+                        checked={form.isPublished}
+                        onChange={(e) => setForm({ ...form, isPublished: e.target.checked })}
+                        className="checkbox checkbox-primary"
+                    />
+                    <label>Published?</label>
+                </div>
+
+                <button type="submit" className="btn w-full">
+                    Add Election
                 </button>
             </form>
 
-            {/* --- Election List --- */}
-            <div className="space-y-4">
+            {/* Elections List */}
+            <div>
                 <h2 className="text-xl font-semibold mb-2">All Elections</h2>
                 {elections.length === 0 ? (
-                    <p>No elections available.</p>
+                    <p>No elections yet.</p>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {elections.map((election) => (
+                        {elections.map((e) => (
                             <div
-                                key={election.id}
+                                key={e.id}
                                 className="card bg-white border border-gray-200 shadow-sm p-4"
                             >
-                                <h3 className="text-lg font-semibold">{election.title}</h3>
+                                <h3 className="font-semibold">{e.title}</h3>
                                 <p>
-                                    <span className="font-medium">Status:</span>{" "}
-                                    {election.isPublished ? (
+                                    Status:{" "}
+                                    {e.isPublished ? (
                                         <span className="text-green-500">Published</span>
                                     ) : (
                                         <span className="text-gray-500">Unpublished</span>
                                     )}
                                 </p>
                                 <p className="text-sm">
-                                    Created: {new Date(election.createdAt).toLocaleString()}
+                                    Start: {new Date(e.startAt).toLocaleString()}
                                 </p>
                                 <p className="text-sm">
-                                    Updated: {new Date(election.updatedAt).toLocaleString()}
+                                    End: {new Date(e.endAt).toLocaleString()}
                                 </p>
 
-                                <div className="flex gap-2 mt-4">
+                                <div className="flex gap-2 mt-3">
                                     <button
-                                        className="btn btn-success btn-sm"
-                                        disabled={election.isPublished}
-                                        onClick={() => handleAction("start", election.id)}
+                                        className="btn btn-info btn-sm text-white"
+                                        onClick={() =>
+                                            setModal({
+                                                type: "confirm",
+                                                action: e.isPublished ? "reset" : "start",
+                                                id: e.id,
+                                            })
+                                        }
                                     >
-                                        Start
+                                        {e.isPublished ? "Reset" : "Start"}
+                                    </button>
+
+                                    <button
+                                        className="btn btn-warning btn-sm text-white"
+                                        onClick={() => handleEdit(e.id)}
+                                    >
+                                        Edit
                                     </button>
                                     <button
-                                        className="btn btn-error btn-sm"
-                                        onClick={() => handleAction("reset", election.id)}
+                                        className="btn btn-error btn-sm text-white"
+                                        onClick={() =>
+                                            setModal({ type: "confirm", action: "delete", id: e.id })
+                                        }
                                     >
-                                        Reset
+                                        Delete
                                     </button>
                                 </div>
                             </div>
@@ -193,23 +220,81 @@ export default function ElectionDashboard() {
                 )}
             </div>
 
-            {/* --- Confirmation Modal --- */}
-            {isConfirmationModalOpen && (
+            {/* --- Modals --- */}
+            {isEditModalOpen && (
+                <dialog open className="modal modal-open">
+                    <div className="modal-box bg-white">
+                        <h3 className="font-bold text-lg">Edit Election</h3>
+                        <form onSubmit={handleSubmit} className="space-y-3 mt-4">
+                            <input
+                                type="text"
+                                placeholder="Title"
+                                value={form.title}
+                                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                                className="input border bg-white border-gray-300 w-full"
+                            />
+                            <textarea
+                                placeholder="Description"
+                                value={form.description}
+                                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                                className="textarea border bg-white border-gray-300 w-full"
+                            />
+                            <div className="grid grid-cols-2 gap-3">
+                                <input
+                                    type="datetime-local"
+                                    value={form.startAt}
+                                    onChange={(e) => setForm({ ...form, startAt: e.target.value })}
+                                    className="input border bg-white border-gray-300 w-full"
+                                />
+                                <input
+                                    type="datetime-local"
+                                    value={form.endAt}
+                                    onChange={(e) => setForm({ ...form, endAt: e.target.value })}
+                                    className="input border bg-white border-gray-300 w-full"
+                                />
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    checked={form.isPublished}
+                                    onChange={(e) => setForm({ ...form, isPublished: e.target.checked })}
+                                    className="checkbox checkbox-primary"
+                                />
+                                <label>Published?</label>
+                            </div>
+                            <div className="modal-action">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsEditModalOpen(false)}
+                                    className="btn btn-outline"
+                                >
+                                    Cancel
+                                </button>
+                                <button type="submit" className="btn btn-primary">
+                                    Update
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </dialog>
+            )}
+
+            {modal.type === "confirm" && (
                 <dialog open className="modal modal-open">
                     <div className="modal-box bg-white">
                         <h3 className="font-bold text-lg">Confirm Action</h3>
                         <p className="py-4">
                             Are you sure you want to{" "}
-                            <strong>{electionAction}</strong> this election?
+                            <strong>{modal.action}</strong> this election?
                         </p>
                         <div className="modal-action">
                             <button
                                 className="btn btn-outline"
-                                onClick={() => setIsConfirmationModalOpen(false)}
+                                onClick={() => setModal({ type: null })}
                             >
                                 Cancel
                             </button>
-                            <button className="btn btn-primary" onClick={confirmAction}>
+                            <button className={`btn btn-${modal.action === "start" ? "success" : "error"} text-white`} onClick={confirmAction}>
                                 Confirm
                             </button>
                         </div>
@@ -217,19 +302,13 @@ export default function ElectionDashboard() {
                 </dialog>
             )}
 
-            {/* --- Success Modal --- */}
-            {isSuccessModalOpen && (
+            {modal.type === "success" && (
                 <dialog open className="modal modal-open">
                     <div className="modal-box bg-white">
-                        <h3 className="font-bold text-lg">Success!</h3>
-                        <p className="py-4">
-                            Election has been successfully {electionAction}ed.
-                        </p>
+                        <h3 className="font-bold text-lg text-success">Success!</h3>
+                        <p className="py-4">Election successfully processed.</p>
                         <div className="modal-action">
-                            <button
-                                className="btn"
-                                onClick={() => setIsSuccessModalOpen(false)}
-                            >
+                            <button className="btn btn-success text-white rounded-lg" onClick={() => setModal({ type: null })}>
                                 Close
                             </button>
                         </div>
@@ -237,19 +316,13 @@ export default function ElectionDashboard() {
                 </dialog>
             )}
 
-            {/* --- Error Modal --- */}
-            {isErrorModalOpen && (
+            {modal.type === "error" && (
                 <dialog open className="modal modal-open">
                     <div className="modal-box bg-white">
                         <h3 className="font-bold text-lg text-error">Error!</h3>
-                        <p className="py-4">
-                            Failed to {electionAction} the election. Please try again later.
-                        </p>
+                        <p className="py-4">Something went wrong. Please try again.</p>
                         <div className="modal-action">
-                            <button
-                                className="btn"
-                                onClick={() => setIsErrorModalOpen(false)}
-                            >
+                            <button className="btn btn-error text-white rounded-lg" onClick={() => setModal({ type: null })}>
                                 Close
                             </button>
                         </div>

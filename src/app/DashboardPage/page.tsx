@@ -15,35 +15,35 @@ export default function DashboardPage() {
             {/* Quick Actions */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
                 <Link
-                    href="/dashboard/HomePage"
+                    href="/DashboardPage/HomePage"
                     className="p-6 bg-white rounded-xl shadow hover:shadow-lg transition"
                 >
                     <h2 className="text-xl font-semibold mb-2">Home</h2>
                     <p className="text-gray-500">Overview data pemilihan</p>
                 </Link>
                 <Link
-                    href="/dashboard/UserPage"
+                    href="/DashboardPage/UserPage"
                     className="p-6 bg-white rounded-xl shadow hover:shadow-lg transition"
                 >
                     <h2 className="text-xl font-semibold mb-2">Participants</h2>
                     <p className="text-gray-500">Kelola data peserta pemilih</p>
                 </Link>
                 <Link
-                    href="/dashboard/ElectionPage"
+                    href="/DashboardPage/ElectionPage"
                     className="p-6 bg-white rounded-xl shadow hover:shadow-lg transition"
                 >
                     <h2 className="text-xl font-semibold mb-2">Election</h2>
                     <p className="text-gray-500">Kelola data pemilihan</p>
                 </Link>
                 <Link
-                    href="/dashboard/CandidatePage"
+                    href="/DashboardPage/CandidatePage"
                     className="p-6 bg-white rounded-xl shadow hover:shadow-lg transition"
                 >
                     <h2 className="text-xl font-semibold mb-2">Candidates</h2>
                     <p className="text-gray-500">Kelola data kandidat pemilihan</p>
                 </Link>
                 <Link
-                    href="/dashboard/AnalyticsPage"
+                    href="/DashboardPage/AnalyticsPage"
                     className="p-6 bg-white rounded-xl shadow hover:shadow-lg transition"
                 >
                     <h2 className="text-xl font-semibold mb-2">Analytics</h2>

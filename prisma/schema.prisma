@@ -4,8 +4,7 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 model User {
@@ -13,7 +12,9 @@ model User {
   nis          String         @unique
   name         String
   password     String
+  kelas        String
   role         Role           @default(STUDENT)
+  isActive     Boolean        @default(true)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   loginHistory LoginHistory[]
